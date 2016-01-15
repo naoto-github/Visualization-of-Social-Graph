@@ -1,0 +1,302 @@
+//====================================================================/
+//　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　/
+// artisoc                                                            /
+//                                                                    /
+//====================================================================/
+
+Version = 3.5;
+
+
+
+//-------------------------------------------------------
+// Component Tree
+//-------------------------------------------------------
+UNIVERSE {
+    Space Graph(0,0),Square_2D(1000, 1000, !Loop, North, 1, !Map_3D){
+        AgtType Node(0, 0)[101] {
+            Dim ID(0, 0) As Integer = (0);
+            Dim X(0, 0) As Double = (0.0);
+            Dim Y(0, 0) As Double = (0.0);
+            Dim Layer(0, 0) As Integer = (0);
+            Dim Direction(0, 0) As Double = (0.0);
+            Dim link(0, 0) As AgtSet = ();
+            Dim Name(0, 0) As String = ("");
+            Dim Image(0, 0) As String = ("");
+        }
+    }
+}
+
+
+//-------------------------------------------------------
+// Agent Variable Initial Data
+//-------------------------------------------------------
+Initial_Value {
+    UNIVERSE.GRAPH.NODE.X = 101(101*0.0);
+    UNIVERSE.GRAPH.NODE.Y = 101(101*0.0);
+    UNIVERSE.GRAPH.NODE.LAYER = 101(101*0);
+    UNIVERSE.GRAPH.NODE.DIRECTION = 101(101*0.0);
+    UNIVERSE.GRAPH.NODE.NAME = 101("ikenofuna", "taz80470", "SloanSamuel4", "BlackDonuts", "BethMolligan", "HellionCulture", "h07054426183", "Hiroki_K_", "Shisyutisiki", "gty7s012"
+, "thisisgallery", "YSYSY99", "DoctorsGate", "cafeskhole", "aida_mituwo_jin", "amanenishi", "mayu_5221", "gb07802r", "rx0746p", "r0642haaz"
+, "jt0598s9", "k0588bpc", "ch540420", "hoppo_bunka", "showheyKATO", "kabukizyouhou", "kakugen111", "MiV5us", "gxk0768x", "mickey_kimi"
+, "b5znlmt2c1", "navi_shopping1", "links_you_2010", "gochoju_doga", "kefycexikabi", "rimodeba", "yumikby", "artisoc_test2", "bimishinbo_bot", "monjo_fight11"
+, "yayoyoz", "_nonstyle_douga", "N2f9Sa", "TokiTabiShop", "piccolo213", "kamiumach", "8zHnP37UJrY3rLU", "hisai_shinsei", "C0meUs", "anestassiamain4"
+, "rqobmf8pu4hz", "techhub_ev", "u_saku4", "kypuqazydof", "3g2gijo5nsjs1", "yamatototohi", "clubkisai", "hanagouri", "takesou2016", "ryokuinjapan"
+, "kokushikijyo", "KitaP2ux", "KOU_0924_", "hrskksrh", "yoneda34001934", "MovemetPqvtnefb", "gejuhoxyvele", "G4vaKa", "kawamura_tanma", "kumasan64"
+, "momokuro_brave", "dk330dk", "bot_tatu", "tomerarenaiwa", "kanasitokiha", "leadponz", "eik9tbzsf", "YOKOSOPRANO", "AFLOAT_NAGOYA", "Rommy344"
+, "dendentown", "hurati", "masabefreedom", "_fukakusa", "oelyan1", "chuunen45", "ToTsukako", "hze00702", "GoYosha24", "TicketsToday_JP"
+, "kushiro00001", "6Guarno", "sore_tigaimasu", "irismaity1223", "mobamani", "tabi_con", "koheikana0006", "jojojojoe07", "freeman_tky", "naoshoukikushou"
+, "kuma30623");
+    UNIVERSE.GRAPH.NODE.IMAGE = 101("Log/Thumb/96075183.jpg", "Log/Thumb/3298238029.jpg", "Log/Thumb/2767426062.jpg", "Log/Thumb/79125102.jpg", "Log/Thumb/4414035927.jpg", "Log/Thumb/3315527542.jpg", "Log/Thumb/4697829878.jpg", "Log/Thumb/90754578.jpg", "Log/Thumb/2888797296.jpg", "Log/Thumb/3081199897.jpg"
+, "Log/Thumb/2815568408.jpg", "Log/Thumb/3413981772.jpg", "Log/Thumb/971196552.jpg", "Log/Thumb/2251997582.jpg", "Log/Thumb/4508398033.jpg", "Log/Thumb/99743989.jpg", "Log/Thumb/4627518794.jpg", "Log/Thumb/4148625315.jpg", "Log/Thumb/4130104713.jpg", "Log/Thumb/4115295274.jpg"
+, "Log/Thumb/4099267216.jpg", "Log/Thumb/4097901267.jpg", "Log/Thumb/3247490600.jpg", "Log/Thumb/393784111.jpg", "Log/Thumb/208837643.jpg", "Log/Thumb/3974000952.jpg", "Log/Thumb/3198860359.jpg", "Log/Thumb/4582044494.jpg", "Log/Thumb/4148182217.jpg", "Log/Thumb/2485095338.jpg"
+, "Log/Thumb/4194588375.jpg", "Log/Thumb/3647469193.jpg", "Log/Thumb/2688288828.jpg", "Log/Thumb/3379399541.jpg", "Log/Thumb/2436154980.jpg", "Log/Thumb/3213917845.jpg", "Log/Thumb/33491430.jpg", "Log/Thumb/4426681992.jpg", "Log/Thumb/2782253041.jpg", "Log/Thumb/3271173853.jpg"
+, "Log/Thumb/1659589578.jpg", "Log/Thumb/3182185070.jpg", "Log/Thumb/4318341492.jpg", "Log/Thumb/3275904385.jpg", "Log/Thumb/4449590773.jpg", "Log/Thumb/3035804509.jpg", "Log/Thumb/3326875272.jpg", "Log/Thumb/4246490952.jpg", "Log/Thumb/4192080612.jpg", "Log/Thumb/4031134336.jpg"
+, "Log/Thumb/4246964004.jpg", "Log/Thumb/3291727076.jpg", "Log/Thumb/623320233.jpg", "Log/Thumb/2434013492.jpg", "Log/Thumb/4143525073.jpg", "Log/Thumb/597318397.jpg", "Log/Thumb/90723275.jpg", "Log/Thumb/3263142774.jpg", "Log/Thumb/3248347861.jpg", "Log/Thumb/3263253355.jpg"
+, "Log/Thumb/4158280999.jpg", "Log/Thumb/4086348919.jpg", "Log/Thumb/2904019604.jpg", "Log/Thumb/2366721685.jpg", "Log/Thumb/4121393534.jpg", "Log/Thumb/3055953626.jpg", "Log/Thumb/2421146557.jpg", "Log/Thumb/4018605253.jpg", "Log/Thumb/3327561366.jpg", "Log/Thumb/121572931.jpg"
+, "Log/Thumb/3713686814.jpg", "Log/Thumb/450592605.jpg", "Log/Thumb/3360379344.jpg", "Log/Thumb/3317564210.jpg", "Log/Thumb/3039303264.jpg", "Log/Thumb/3550014446.jpg", "Log/Thumb/3735158114.jpg", "Log/Thumb/119921181.jpg", "Log/Thumb/786596725.jpg", "Log/Thumb/2769308526.jpg"
+, "Log/Thumb/71577577.jpg", "Log/Thumb/70639535.jpg", "Log/Thumb/1290554304.jpg", "Log/Thumb/56698570.jpg", "Log/Thumb/3613867515.jpg", "Log/Thumb/2945793571.jpg", "Log/Thumb/3611523373.jpg", "Log/Thumb/3017841586.jpg", "Log/Thumb/3360553160.jpg", "Log/Thumb/3318386814.jpg"
+, "Log/Thumb/2463237896.jpg", "Log/Thumb/3160463761.jpg", "Log/Thumb/3234238393.jpg", "Log/Thumb/2808715130.jpg", "Log/Thumb/1064869004.jpg", "Log/Thumb/592746501.jpg", "Log/Thumb/3413512045.jpg", "Log/Thumb/2938750424.jpg", "Log/Thumb/2663108388.jpg", "Log/Thumb/1708896794.jpg"
+, "Log/Thumb/1707055400.jpg");
+}
+
+
+//-------------------------------------------------------
+// Agent Rule
+//-------------------------------------------------------
+#begin_rule UNIVERSE
+Univ_Init{
+
+	//ランダムに配置
+	/*
+	Dim nodes as AgtSet
+	MakeAgtSet(nodes, Universe.Graph.Node)
+	RandomPutAgtSet(nodes)
+	*/
+	
+	//中央に配置
+	Dim center as Agt
+	center = Universe.Graph.Node(0)
+	center.x = GetWidthSpace(Universe.Graph) / 2;
+	center.y = GetHeightSpace(Universe.Graph) / 2;
+	
+	//円状に配置
+	Dim node as Agt
+	Dim nodes as AgtSet
+	Dim r as double
+	Dim rad as double
+	MakeAgtSet(nodes, Universe.Graph.Node)
+	RemoveAgt(nodes, center)
+	r = GetWidthSpace(Universe.Graph) / 2;
+	for each node in nodes
+		rad = Rnd() * 2 * PI();
+		node.x = r + (0.9 * r) * cos(rad)
+		node.y = r + (0.9 * r) * sin(rad)
+	next node
+}
+
+Univ_Step_Begin{
+
+}
+
+Univ_Step_End{
+
+}
+
+Univ_Finish{
+
+}
+#end_rule UNIVERSE
+
+
+
+
+//-------------------------------------------------------
+// Agent Rule
+//-------------------------------------------------------
+#begin_rule UNIVERSE.GRAPH.NODE
+Agt_Init{
+}
+
+Agt_Step{
+}
+#end_rule UNIVERSE.GRAPH.NODE
+
+
+
+
+//-------------------------------------------------------
+// Simulation Definition Division
+//-------------------------------------------------------
+Single_Simulation {
+    Step_Max = 0;
+    Time_Max = 0;
+    End_Condition = "";
+    Exec_Wait = 1;
+    Exec_Order = Random;
+    Exec_Order_Random_First_Step_Only = No;
+    Random_Seed = 0;
+    Redraw_Timing = Step;
+    Redraw_Interval = 1;
+    Garbage_Interval = 0;
+}
+
+
+//-------------------------------------------------------
+// Simulation Loop Definition Division
+//-------------------------------------------------------
+Repeat_Simulation {
+    Value_Change = None;
+    Initial_Value_Change_None {
+        Repeat_Max = 1;
+    }
+}
+
+
+//-------------------------------------------------------
+// 2 Dimension Map Display Definition Division
+//-------------------------------------------------------
+Map_Output {
+    Map_Space_Name = "Universe.Graph";
+    Map_Name = "ソーシャルグラフ";
+    Title = "ソーシャルグラフ";
+    Disable = No;
+    Background_Color = 255, 255, 255;
+    Position_x = 183;
+    Position_y = 33;
+    Size_x = 906;
+    Size_y = 725;
+    Remarks = No;
+    Map_Cell_Size = 2;
+    Legend_Pos = Top;
+    Font_Name = "Dialog";
+    Font_Char_Set = 81;
+    Font_Size = 12.0;
+    Font_Style = 0;
+    Font_Color = 0, 0, 0;
+    Font_Background_Color = 255, 255, 255;
+    FastDraw = Yes;
+    Draw_Timing = Simulation_Step;
+    Draw_Interval = 1;
+    Axis_Label = "", "";
+    Draw_Range = 0, 0, 1000, 1000;
+    Ruled_Line = No;
+    Text_Display = No;
+    Text_Display_Variable_Name = "";
+    Chess_Type_Display_Position = Yes;
+    Background_Transparent = No;
+    Target_Layer = 0;
+    Coordinate_Display = No;
+    Space_Kind = Square_2D;
+    BG_Pict = Yes;
+    BG_Type = 0;
+    BG_Var_Name = "";
+    BG_File_Name = "背景.jpg";
+    Origin_Position = 2;
+    Output_Group_Name = "";
+    Output {
+        Map_Element_Name = "Node";
+        Map_Element = Agent_Variable;
+        Output_Expression = "Universe.Graph.Node";
+        Draw_Line = No;
+        Collection_Name = "";
+        Line_Type = 0;
+        Line_Arrow = 0;
+        Line_Width = 0;
+        Line_Color = 0, 0, 0;
+        Line_Type_Variable = "";
+        Line_Arrow_Variable = "";
+        Line_Width_Variable = "";
+        Line_Color_Variable = "";
+        Agent_Color = 255,0,0;
+        Marker_Id = -1;
+        Effective_Figures = 0;
+        Format_Id = 0;
+        Agent_Image_Direction = No;
+        Icon_Type = 0;
+        Icon_Var_Name = "Universe.Graph.Node.Image";
+        Icon_Transparent = No;
+        Icon_Enlarg_Reduce = No;
+        Icon_File_Name = "";
+        Num_Display = Yes;
+        Num_Var_Name = "Universe.Graph.Node.Name";
+        Agent_Image_Magnify_by_value = Yes;
+        Agent_Image_Magnify_Value = 1.0;
+        Agent_Image_Magnify_Variable_Name = "Universe.Graph.Node.ID";
+        Agent_Image_Transparency_by_value = Yes;
+        Agent_Image_Transparency_Value = 0.0;
+        Agent_Image_Transparency_Variable_Name = "Universe.Graph.Node.ID";
+    }
+}
+
+
+//-------------------------------------------------------
+// Control Panel Definition Division
+//-------------------------------------------------------
+Control_Panel {
+    Display_Area = 83, 557, 207, 193;
+}
+
+
+//-------------------------------------------------------
+// Space Initial Value Definition Divsion
+//-------------------------------------------------------
+Space_Initial {
+}
+
+
+//-------------------------------------------------------
+// Other Miscellaneous Data Definition Division
+//-------------------------------------------------------
+Others_Data {
+    Indent = 4;
+    Rule_Colored = Yes;
+    Window_Hide_Run = 1;
+    Debug_Position_x = 75;
+    Debug_Position_y = 75;
+    Debug_Size_x = 400;
+    Debug_Size_y = 200;
+    Console_Position_x = 322;
+    Console_Position_y = 780;
+    Console_Size_x = 600;
+    Console_Size_y = 120;
+    Componen_Tree_Position_x = 40;
+    Componen_Tree_Position_y = 43;
+    Componen_Tree_Size_x = 250;
+    Componen_Tree_Size_y = 400;
+    Console_Background_Color = 16777215;
+    Console_Foreground_Color = 255;
+    Console_DisplayLines_Max = 500;
+    Font_Name = "Dialog";
+    Font_Char_Set = 0;
+    Font_Size = 20.0;
+    Font_Style = 0;
+    Font_Color = 0, 0, 0;
+    Font_Background_Color = 0, 0, 0;
+}
+
+
+//-------------------------------------------------------
+// Network Information Definition Division
+//-------------------------------------------------------
+Network_Info {
+    Global_Space_Area = 0, 0, 100, 100;
+    Local_Space_Info {
+    }
+}
+
+
+//-------------------------------------------------------
+// Window Location Definition Division
+//-------------------------------------------------------
+Window_Rectangle {
+    Window_Name = Main_Window, -8, -8, 1936, 1056;
+    Window_Name = Output_Setting_Window, 160, 205, 480, 290;
+    Window_Name = Artisoc_Help_Window, 749, 368, 1290, 400;
+}
+
+
+//-------------------------------------------------------
+// Help Favorite Division
+//-------------------------------------------------------
+Help_Favorite {
+}
