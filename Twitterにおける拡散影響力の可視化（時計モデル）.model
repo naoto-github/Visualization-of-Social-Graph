@@ -43,6 +43,19 @@ UNIVERSE {
             Dim Value(0, 0) As Double = (0.0);
             Dim Alpha(0, 0) As Double = (0.0);
         }
+        AgtType TopKeyword(0, 0)[0] {
+            Dim ID(0, 0) As Integer = ();
+            Dim X(0, 0) As Double = ();
+            Dim Y(0, 0) As Double = ();
+            Dim Layer(0, 0) As Integer = ();
+            Dim Direction(0, 0) As Double = ();
+            Dim Token(0, 0) As String = ();
+            Dim Value(0, 0) As Double = ();
+            Dim Alpha(0, 0) As Double = ();
+            Dim ImageFile(0, 0) As String = ();
+            Dim Visible(0, 0) As Boolean = ();
+            Dim Speed(0, 0) As Integer = ();
+        }
         AgtType Tweet(0, 0)[0] {
             Dim ID(0, 0) As Integer = (0);
             Dim X(0, 0) As Double = (0.0);
@@ -52,6 +65,8 @@ UNIVERSE {
             Dim Time(0, 0) As Long = (0);
             Dim Text(0, 0) As String = ("");
             Dim Time_s(0, 0) As String = ("");
+            Dim Visible(0, 0) As Boolean = (0);
+            Dim Alpha(0, 0) As Integer = (0);
         }
         AgtType HourHand(0, 0)[1] {
             Dim ID(0, 0) As Integer = (0);
@@ -85,6 +100,7 @@ UNIVERSE {
     Dim BaseTime(0, 0) As Long = (0);
     Dim Unit(0, 0) As Integer = (0);
     Dim TextLength(0, 0) As Integer = (0);
+    Dim TopKeywords(0, 0) As AgtSet = ();
 }
 
 
@@ -92,9 +108,9 @@ UNIVERSE {
 // Agent Variable Initial Data
 //-------------------------------------------------------
 Initial_Value {
-    UNIVERSE.TARGET = 1(1);
+    UNIVERSE.TARGET = 1(0);
     UNIVERSE.UNIT = 1(6000);
-    UNIVERSE.TEXTLENGTH = 1(25);
+    UNIVERSE.TEXTLENGTH = 1(100);
     UNIVERSE.GRAPH.NODE.X = 101(101*0.0);
     UNIVERSE.GRAPH.NODE.Y = 101(101*0.0);
     UNIVERSE.GRAPH.NODE.LAYER = 101(101*0);
@@ -162,6 +178,9 @@ Univ_Init{
 	
 	//時計モデルの初期位置
 	initClock()
+	
+	//トップキーワードの読込
+	readTopKeywords()
 }
 
 //時計モデルの初期配置
@@ -195,6 +214,37 @@ sub initClock(){
 		node.x = node.x_c + (0.7 * node.r) * cos(node.angle)
 		node.y = node.y_c + (0.7 * node.r) * sin(node.angle)
 	next node
+}
+
+
+//トップキーワード情報の読込
+sub readTopKeywords(){
+
+	//ファイル
+	Dim path as String
+	path = "Log\Tokens\Top30.csv"
+
+	//ファイルを開く
+	Dim line as String
+	Dim keyword as Agt
+	Dim tmp1 as String
+	Dim tmp2 as String
+	if OpenFile(path, My.ID, 1) then
+		Do While true	
+			if IsEofFile(My.ID) then
+				CloseFile(My.ID)
+				break;
+			else
+				line = ReadFile(My.ID)
+				keyword = CreateAgt(Universe.Graph.TopKeyword)
+				keyword.token = GetToken(line, 0)
+				keyword.value = GetToken(line, 4)
+				keyword.ImageFile = "Keywords_69/" & keyword.token & ".png"
+				keyword.visible = false;
+				AddAgt(Universe.TopKeywords, keyword)
+			end if
+		Loop
+	end if
 }
 
 Univ_Step_Begin{
@@ -237,11 +287,10 @@ Agt_Init{
 	end if
 
 	//ターゲットの設定
-	Dim tweet as Agt
 	if My.ID == Universe.Target then
 		My.Alpha = 0
-		tweet = GetAgt(My.Tweets, 0)
-		Universe.BaseTime = tweet.time
+		My.CurrentTweet.Visible = true
+		Universe.BaseTime = My.CurrentTweet.time
 	end if
 }
 
@@ -261,21 +310,32 @@ sub showTweet(){
 	Dim size as integer
 	Dim counter as integer
 	Dim hand as Agt
+	Dim top_keyword as Agt
+	
 	size = CountAgtSet(My.Tweets)
 	counter = GetCountStep()
 	hand = Universe.Graph.MinuteHand(0)
 	if size > 0 then
 		for i=My.TweetNumber to size-1
 			tweet = GetAgt(My.Tweets, i)
-			if (tweet.time >= Universe.BaseTime) and
-			   (tweet.time < Universe.BaseTime + counter * Universe.Unit) then	   
-			   My.CurrentTweet = tweet
-			   My.X = My.X_C + (0.7 * My.R) * cos(DegreeToRad(hand.direction) + (PI() / 2))
-			   My.Y = My.Y_C + (0.7 * My.R) * sin(DegreeToRad(hand.direction) + (PI() / 2))
-			   My.CurrentTweet.X = My.X
-			   My.CurrentTweet.Y = My.Y - 40
+			if (tweet.time >= Universe.BaseTime) and (tweet.time < Universe.BaseTime + counter * Universe.Unit) then	   
+			   	My.CurrentTweet = tweet
+			   	My.X = My.X_C + (0.7 * My.R) * cos(DegreeToRad(hand.direction) + (PI() / 2))
+			   	My.Y = My.Y_C + (0.7 * My.R) * sin(DegreeToRad(hand.direction) + (PI() / 2))
+			   	My.CurrentTweet.X = My.X
+			   	My.CurrentTweet.Y = My.Y - 40
+			   	My.CurrentTweet.Visible = true
 				My.Alpha = 0
 				My.TweetNumber = i + 1
+				
+				for each top_keyword in Universe.TopKeywords
+					if InStr(1, My.CurrentTweet.Text, top_keyword.token) > 0 then
+						top_keyword.visible = true
+						top_keyword.X = My.X
+						top_keyword.Y = My.Y
+					end if
+				next top_keyword
+				
 				break
 			end if
 		next i
@@ -285,19 +345,13 @@ sub showTweet(){
 
 //ツイートの非表示
 sub hideTweet(){
+
 	if My.Alpha < 100 then
 		My.Alpha = My.Alpha + 1
 	else
 		My.Alpha = 100
 	end if
-		
-	if My.Alpha == 100 then
-		if CountAgtSet(My.Tweets) > 0 then
-			My.CurrentTweet.X = -9999
-			My.CurrentTweet.Y = -9999
-		end if
-	end if
-	
+
 }
 
 //ツイート情報の読込
@@ -331,6 +385,8 @@ sub readTweets(){
 		Loop
 	end if
 
+	//ツイートをソート
+	SortAgtSet(My.Tweets, "Time", true)
 }
 
 //キーワード情報の読込
@@ -392,13 +448,56 @@ sub hidden(){
 //-------------------------------------------------------
 // Agent Rule
 //-------------------------------------------------------
-#begin_rule UNIVERSE.GRAPH.TWEET
+#begin_rule UNIVERSE.GRAPH.TOPKEYWORD
 Agt_Init{
-	hidden()
+	//透明度
+	My.Alpha = 100
+	
+	//進行角度
+	My.Direction = Rnd() * 360
+	
+	//進行速度
+	My.Speed = 10
 }
 
 Agt_Step{
 
+	Dim distance as integer
+	if My.Visible then
+		My.Alpha = 0
+		distance = Forward(My.Speed)
+		if distance <> -1 then
+			My.Visible = false
+		end if
+		else
+		My.Alpha = 100
+	end if
+}
+#end_rule UNIVERSE.GRAPH.TOPKEYWORD
+
+
+
+
+//-------------------------------------------------------
+// Agent Rule
+//-------------------------------------------------------
+#begin_rule UNIVERSE.GRAPH.TWEET
+Agt_Init{
+	My.Visible = false
+	My.Alpha = 0
+	hidden()
+}
+
+Agt_Step{
+	if My.Visible then
+		My.Alpha = My.Alpha + 1
+		if My.Alpha == 100 then
+			My.Visible = false
+			My.Alpha = 0
+		end if
+	else
+		hidden()
+	end if
 }
 
 //非表示
@@ -535,6 +634,7 @@ Executing_Order_Component {
     Component_Priority = "Universe.Graph.Node", 1;
     Component_Priority = "Universe.Graph.Keyword", 2;
     Component_Priority = "Universe.Graph.Tweet", 2;
+    Component_Priority = "Universe.Graph.TopKeyword", 3;
     Component_Priority = "Universe.Graph.MinuteHand", 3;
     Component_Priority = "Universe.Graph.HourHand", 4;
     Component_Priority = "Universe.Graph.Center", 5;
@@ -550,8 +650,8 @@ Map_Output {
     Title = "ソーシャルグラフ";
     Disable = No;
     Background_Color = 255, 255, 255;
-    Position_x = 1;
-    Position_y = 2;
+    Position_x = 268;
+    Position_y = 3;
     Size_x = 773;
     Size_y = 721;
     Remarks = No;
@@ -747,6 +847,39 @@ Map_Output {
         Agent_Image_Transparency_Value = 0.0;
         Agent_Image_Transparency_Variable_Name = "Universe.Graph.Tweet.ID";
     }
+    Output {
+        Map_Element_Name = "TopKeyword";
+        Map_Element = Agent_Variable;
+        Output_Expression = "Universe.Graph.TopKeyword";
+        Draw_Line = No;
+        Collection_Name = "";
+        Line_Type = 0;
+        Line_Arrow = 0;
+        Line_Width = 0;
+        Line_Color = 0, 0, 0;
+        Line_Type_Variable = "";
+        Line_Arrow_Variable = "";
+        Line_Width_Variable = "";
+        Line_Color_Variable = "";
+        Agent_Color = 255,0,0;
+        Marker_Id = -1;
+        Effective_Figures = 0;
+        Format_Id = 0;
+        Agent_Image_Direction = No;
+        Icon_Type = 0;
+        Icon_Var_Name = "Universe.Graph.TopKeyword.ImageFile";
+        Icon_Transparent = No;
+        Icon_Enlarg_Reduce = No;
+        Icon_File_Name = "";
+        Num_Display = No;
+        Num_Var_Name = "";
+        Agent_Image_Magnify_by_value = Yes;
+        Agent_Image_Magnify_Value = 1.0;
+        Agent_Image_Magnify_Variable_Name = "Universe.Graph.TopKeyword.ID";
+        Agent_Image_Transparency_by_value = No;
+        Agent_Image_Transparency_Value = 0.0;
+        Agent_Image_Transparency_Variable_Name = "Universe.Graph.TopKeyword.Alpha";
+    }
 }
 
 
@@ -754,7 +887,7 @@ Map_Output {
 // Control Panel Definition Division
 //-------------------------------------------------------
 Control_Panel {
-    Display_Area = 1678, 531, 207, 549;
+    Display_Area = 0, 376, 207, 549;
     Panel_Item {
         Item_Type = Slider;
         Item_Name = "対象ユーザ";
@@ -769,7 +902,7 @@ Control_Panel {
         Slider_Range_Max = 100;
         Slider_Value_Min = 0.0;
         Slider_Value_Step = 1.0;
-        Slider_Value = "1";
+        Slider_Value = "0";
     }
     Panel_Item {
         Item_Type = Slider;
@@ -798,10 +931,10 @@ Control_Panel {
         Font_Color = 0, 0, 0;
         Font_Background_Color = 0, 0, 0;
         Var_Name = "Universe.TextLength";
-        Slider_Range_Max = 49;
+        Slider_Range_Max = 99;
         Slider_Value_Min = 1.0;
         Slider_Value_Step = 1.0;
-        Slider_Value = "24";
+        Slider_Value = "99";
     }
 }
 
@@ -824,8 +957,8 @@ Others_Data {
     Debug_Position_y = 75;
     Debug_Size_x = 400;
     Debug_Size_y = 200;
-    Console_Position_x = 1277;
-    Console_Position_y = 78;
+    Console_Position_x = 1081;
+    Console_Position_y = 11;
     Console_Size_x = 638;
     Console_Size_y = 265;
     Componen_Tree_Position_x = 2;
@@ -858,7 +991,7 @@ Network_Info {
 // Window Location Definition Division
 //-------------------------------------------------------
 Window_Rectangle {
-    Window_Name = Main_Window, 84, 6, 793, 832;
+    Window_Name = Main_Window, -1928, -8, 1936, 1056;
     Window_Name = Output_Setting_Window, 728, 383, 480, 290;
     Window_Name = Artisoc_Help_Window, 480, 130, 1290, 400;
 }
